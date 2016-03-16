@@ -220,24 +220,24 @@ var setDogName = function(req, res) {
         breed: req.body.breed,
 		age: req.body.age
     };
-	console.log(dogData);
+	//console.log(dogData);
 
     //create a new object of CatModel with the object to save
     var newDog = new Dog(dogData);
-	console.log(newDog);
+	//console.log(newDog);
     
     //Save the newCat object to the database
     newDog.save(function(err) {
         if(err) {
             return res.json({err:err}); //if error, return it
         }
-		console.log("saving...");
+		//console.log("saving...");
         
         //set the lastAdded cat to our newest cat object. This way we can update it dynamically
         lastDogAdded = newDog;
         
         //return success
-		console.log("saved");
+		//console.log("saved");
         return res.json({name: name});
     });
 };

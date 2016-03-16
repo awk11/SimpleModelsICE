@@ -209,7 +209,7 @@ var setDogName = function(req, res) {
     
     //check if the required fields exist
     //normally you would also perform validation to know if the data they sent you was real 
-    if(!req.body.firstname || !req.body.lastname || !req.body.beds) {
+    if(!req.body.name || !req.body.breed || !req.body.age) {
         //if not respond with a 400 error (either through json or a web page depending on the client dev)
         return res.status(400).json({error: "name,breed and age are all required"});
     }

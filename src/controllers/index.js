@@ -384,6 +384,6 @@ module.exports = {
     searchName: searchName,
     notFound: notFound,
 	setDogName: setDogName,
-    updateDogLast: updateLastDog,
+    updateLastDog: updateLastDog,
     searchDogName: searchDogName
 };

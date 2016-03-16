@@ -378,6 +378,7 @@ module.exports = {
     page2: hostPage2,
     page3: hostPage3, 
     getName: getName,
+	getDogName: getDogName,
     setName: setName,
     updateLast: updateLast,
     searchName: searchName,

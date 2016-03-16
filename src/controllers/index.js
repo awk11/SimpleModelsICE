@@ -224,7 +224,7 @@ var setDogName = function(req, res) {
 
     //create a new object of CatModel with the object to save
     var newDog = new Dog(dogData);
-	//console.log(newDog);
+	console.log(newDog);
     
     //Save the newCat object to the database
     newDog.save(function(err) {

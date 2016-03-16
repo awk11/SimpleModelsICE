@@ -7,3 +7,12 @@ html(lang="en")
     a(href="/") Home
     a(href="/page1") Page 1
     a(href="/page2") Page 2
+	form(action="/setDogName", method="POST")
+      | First name:
+      input(type="text", name="name", value="")
+      | Breed:
+      input(type="text", name="breed", value="")
+      | Age:
+      input(type="number", name="age" value="")
+      input(type="submit", value="Submit")
+    br

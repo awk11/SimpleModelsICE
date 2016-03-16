@@ -87,5 +87,5 @@ DogSchema.statics.findByName = function(name, callback) {
 DogModel = mongoose.model('Dog', DogSchema);
 
 //export our public properties
-module.exports.CatModel = DogModel;
-module.exports.CatSchema = DogSchema;
+module.exports.DogModel = DogModel;
+module.exports.DOgSchema = DogSchema;

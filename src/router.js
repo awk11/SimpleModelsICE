@@ -33,7 +33,7 @@ var router = function(app) { //pass the express app in
     //When someone POSTS to /updateLast, call controllers.updateLast
     app.post('/updateLast', controllers.updateLast);
 	
-	//app.post('/setDogName', controllers.setDogName);
+	app.post('/setDogName', controllers.setDogName);
 	//app.post('/updateLastDog', controllers.updateLastDog);
 	
 };

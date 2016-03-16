@@ -121,7 +121,7 @@ var hostPage1 = function(req, res) {
     };
     
     readAllCats(req, res, callback);
-	//readAllDogs(req, res, dogCallback);
+	readAllDogs(req, res, dogCallback);
 };
 
 //function to handle requests to the page2 page

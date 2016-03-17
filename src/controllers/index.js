@@ -121,7 +121,7 @@ var hostPage1 = function(req, res) {
     };
     
     readAllCats(req, res, callback);
-	readAllDogs(req, res, dogCallback);
+	//readAllDogs(req, res, dogCallback);
 };
 
 //function to handle requests to the page2 page
@@ -220,7 +220,7 @@ var setDogName = function(req, res) {
         breed: req.body.breed,
 		age: req.body.age
     };
-	//console.log(dogData);
+	console.log(dogData);
 
     //create a new object of CatModel with the object to save
     var newDog = new Dog(dogData);
@@ -231,14 +231,14 @@ var setDogName = function(req, res) {
         if(err) {
             return res.json({err:err}); //if error, return it
         }
-		//console.log("saving...");
+		console.log("saving...");
         
         //set the lastAdded cat to our newest cat object. This way we can update it dynamically
         lastDogAdded = newDog;
         
         //return success
-		//console.log("saved");
-        return res.json({name: name});
+		console.log("saved");
+        return res.json({name: dogData.name});
     });
 };
 
@@ -308,11 +308,19 @@ var searchDogName = function(req,res) {
         
         //if no matches, let them know (does not necessarily have to be an error since technically it worked correctly)
         if(!doc) {
-            return res.json({error: "No dogs found"});
+            return res.json({error: "No dog found by that name"});
         }
-        
+        doc.age++;
         //if a match, send the match back
-        return res.json({name: doc.name, breed: doc.breed, age: doc.age});
+		doc.save(function(err) {
+			//if save error, just return an error for now
+			if(err) {
+				return res.json({err:err});
+			}
+			
+			//otherwise just send back the name as a success
+			return res.json({name:doc.name, breed: doc.breed, age: doc.age});
+		});
     });
   
 };
@@ -340,7 +348,7 @@ var updateLast = function(req, res) {
     });
 };
 
-//function to handle a request to update the last added object
+/*//function to handle a request to update the last added object
 //this PURELY exists to show you how to update a model object
 //Normally for an update, you'd get data from the client, search for an object, update the object and put it back
 //We will skip straight to updating an object (that we stored as last added) and putting it back
@@ -361,7 +369,7 @@ var updateLastDog = function(req, res) {
         //otherwise just send back the name as a success
         return res.json({name:lastDogAdded.name, breed: lastDogAdded.breed, age: lastDogAdded.age});
     });
-};
+};*/
 
 //function to handle a request to any non-real resources (404)
 //controller functions in Express receive the full HTTP request
@@ -388,6 +396,6 @@ module.exports = {
     searchName: searchName,
     notFound: notFound,
 	setDogName: setDogName,
-    updateLastDog: updateLastDog,
+    //updateLastDog: updateLastDog,
     searchDogName: searchDogName
 };

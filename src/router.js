@@ -34,7 +34,7 @@ var router = function(app) { //pass the express app in
     app.post('/updateLast', controllers.updateLast);
 	
 	app.post('/setDogName', controllers.setDogName);
-	app.post('/updateLastDog', controllers.updateLastDog);
+	//app.post('/updateLastDog', controllers.updateLastDog);
 	
 };
 

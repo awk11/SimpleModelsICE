@@ -19,7 +19,6 @@ var defaultDogData = {
 
 //object for us to keep track of the last Cat we made and dynamically update it sometimes
 var lastAdded = new Cat(defaultData);
-var lastDogAdded = new Dog(defaultDogData);
 
 //function to handle requests to the main page
 //controller functions in Express receive the full HTTP request 
@@ -43,16 +42,6 @@ var readAllCats = function(req, res, callback) {
     //two parameters is JSON of search criteria and callback. That limits your search to only things that match the criteria
     //The find function returns an array of matching objects
     Cat.find(callback);
-};
-
-//function to find all cats on request. Express functions always receive the request and the response.
-var readAllDogs = function(req, res, callback) {
-    //Call the model's built in find function and provide it a callback to run when the query is complete
-    //Find has several versions
-    //one parameter is just the callback
-    //two parameters is JSON of search criteria and callback. That limits your search to only things that match the criteria
-    //The find function returns an array of matching objects
-    Dog.find(callback);
 };
 
 //function to find a specific cat on request. Express functions always receive the request and the response.
@@ -110,18 +99,8 @@ var hostPage1 = function(req, res) {
         //return success
         return res.render('page1', {cats:docs}); 
     };
-	
-	var dogCallback = function(err, docs) {
-        if(err) {
-            return res.json({err:err}); //if error, return it 
-        }
-
-        //return success
-        return res.render('page1', {dogs:docs}); 
-    };
     
     readAllCats(req, res, callback);
-	//readAllDogs(req, res, dogCallback);
 };
 
 //function to handle requests to the page2 page
@@ -151,15 +130,6 @@ var getName = function(req, res) {
     //res.json returns json to the page. Since this sends back the data through HTTP
     //you can't send any more data to this user until the next response
     res.json({name: lastAdded.name});
-};
-
-//function to handle get request to send the name
-//controller functions in Express receive the full HTTP request 
-//and a pre-filled out response object to send
-var getDogName = function(req, res) {
-    //res.json returns json to the page. Since this sends back the data through HTTP
-    //you can't send any more data to this user until the next response
-    res.json({name: lastDogAdded.name});
 };
 
 //function to handle a request to set the name
@@ -201,43 +171,32 @@ var setName = function(req, res) {
     });
 };
 
-//function to handle a request to set the name
-//controller functions in Express receive the full HTTP request
-//and get a pre-filled out response object to send
-//ADDITIONALLY, with body-parser we will get the body/form/POST data in the request as req.body
+//creates a new dog!
 var setDogName = function(req, res) {
     
-    //check if the required fields exist
-    //normally you would also perform validation to know if the data they sent you was real 
+    //makes sure all fields are properly filled out
     if(!req.body.name || !req.body.breed || !req.body.age) {
         //if not respond with a 400 error (either through json or a web page depending on the client dev)
         return res.status(400).json({error: "name, breed, and age are all required"});
     }
     
-        //dummy JSON to insert into database
+    //the json to be added to the database
     var dogData = {
         name: req.body.name,
         breed: req.body.breed,
 		age: req.body.age
     };
-	console.log(dogData);
 
-    //create a new object of CatModel with the object to save
+    //create a new object of DogModel with the object to save
     var newDog = new Dog(dogData);
-	console.log(newDog);
     
-    //Save the newCat object to the database
+    //Save the new dog to the database
     newDog.save(function(err) {
         if(err) {
             return res.json({err:err}); //if error, return it
         }
-		console.log("saving...");
-        
-        //set the lastAdded cat to our newest cat object. This way we can update it dynamically
-        lastDogAdded = newDog;
         
         //return success
-		console.log("saved");
         return res.json({name: dogData.name});
     });
 };
@@ -280,45 +239,34 @@ var searchName = function(req,res) {
   
 };
 
-//function to handle requests search for a name and return the object
-//controller functions in Express receive the full HTTP request 
-//and a pre-filled out response object to send
+//searches for a dogs name in the system and adds 1 to its age
 var searchDogName = function(req,res) {
 
-    //check if there is a query parameter for name
-    //BUT WAIT!!?!
-    //Why is this req.query and not req.body like the others
-    //This is a GET request. Those come as query parameters in the URL
-    //For POST requests like the other ones in here, those come in a request body because they aren't a query
-    //POSTS send data to add while GETS query for a page or data (such as a search)
+    //if there's no name put into the search bar
     if(!req.query.name) {
         return res.json({error: "Name is required to perform a search"});
     }
   
-    //Call our Cat's static findByName function. Since this is a static function, we can just call it without an object
-    //Methods like sayName are attached only to each object instance (not static) 
-    //pass in a callback (like we specified in the Cat model
-    //Normally would you break this code up, but I'm trying to keep it together so it's easier to see how the system works
-    //For that reason, I gave it an anonymous callback instead of a named function you'd have to go find
+    //search for the name
     Dog.findByName(req.query.name, function(err, doc) {
-        //errs, handle them
+        //handles the errs
         if(err) {
             return res.json({err:err}); //if error, return it            
         }
         
-        //if no matches, let them know (does not necessarily have to be an error since technically it worked correctly)
+        //if no dog is found then return a message indicating such
         if(!doc) {
-            return res.json({error: "No dog found by that name"});
+            return res.json({result: "No dog found by that name"});
         }
+		//increase the age
         doc.age++;
-        //if a match, send the match back
+        //save the changes to the dog
 		doc.save(function(err) {
-			//if save error, just return an error for now
 			if(err) {
 				return res.json({err:err});
 			}
 			
-			//otherwise just send back the name as a success
+			//send back the match
 			return res.json({name:doc.name, breed: doc.breed, age: doc.age});
 		});
     });
@@ -348,29 +296,6 @@ var updateLast = function(req, res) {
     });
 };
 
-/*//function to handle a request to update the last added object
-//this PURELY exists to show you how to update a model object
-//Normally for an update, you'd get data from the client, search for an object, update the object and put it back
-//We will skip straight to updating an object (that we stored as last added) and putting it back
-var updateLastDog = function(req, res) {
-    
-    //Your model is JSON, so just change a value in it. This is the benefit of ORM (mongoose) and/or object documents (Mongo NoSQL)
-    //You can treat objects just like that - objects. 
-    //Normally you'd find a specific object, but we will only give the user the ability to update our last object
-    lastDogAdded.age++;
-    
-    //once you change all the object properties you want, then just call the Model object's save function
-    lastDogAdded.save(function(err) {
-        //if save error, just return an error for now
-        if(err) {
-            return res.json({err:err});
-        }
-        
-        //otherwise just send back the name as a success
-        return res.json({name:lastDogAdded.name, breed: lastDogAdded.breed, age: lastDogAdded.age});
-    });
-};*/
-
 //function to handle a request to any non-real resources (404)
 //controller functions in Express receive the full HTTP request
 //and get a pre-filled out response object to send
@@ -390,12 +315,10 @@ module.exports = {
     page2: hostPage2,
     page3: hostPage3, 
     getName: getName,
-	getDogName: getDogName,
     setName: setName,
     updateLast: updateLast,
     searchName: searchName,
     notFound: notFound,
 	setDogName: setDogName,
-    //updateLastDog: updateLastDog,
     searchDogName: searchDogName
 };
